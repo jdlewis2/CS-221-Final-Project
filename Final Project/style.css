@@ -4,6 +4,99 @@
     box-sizing: border-box;
 }
 
+
+/* Intro Screen */
+.intro-screen {
+    text-align: center;
+    padding: 2em;
+}
+
+.intro-screen h1 {
+    font-size: 2.5em;
+    margin-bottom: 0.5em;
+}
+
+.intro-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 250px;
+    margin: 30px auto 0;
+}
+
+.intro-buttons button {
+    padding: 12px 0;
+    font-size: 1.2rem;
+    font-family: 'New Rocker', cursive;
+    background-color: #8b4513;
+    color: #fff;
+    border: 3px solid #5e2c04;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.intro-buttons button:hover {
+    background-color: #a0522d;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* How to Play Screen */
+.how-to-play-screen {
+    text-align: center;
+    padding: 2em;
+}
+
+.instructions {
+    background-color: #f5e7d0;
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px solid #d2b48c;
+    margin: 20px 0;
+    font-family: 'Eagle Lake', cursive;
+    line-height: 1.5;
+}
+
+.instructions p {
+    margin-bottom: 10px;
+}
+
+#close-instructions {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-family: 'New Rocker', cursive;
+    background-color: #8b4513;
+    color: #fff;
+    border: 2px solid #5e2c04;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#close-instructions:hover {
+    background-color: #a0522d;
+}
+
+#return-to-menu-button {
+    font-size: 1rem;
+    padding: 0.5em 1em;
+    background-color: #556b2f;
+    border: 3px solid #3b4a1f;
+    color: #fff;
+    border-radius: 0.5em;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'New Rocker', cursive;
+    transition: all 0.3s;
+    width: fit-content;
+
+    margin: 1em auto 0;
+    display: inline-block;
+}
+
 body {
     background-image: url("https://i.pinimg.com/originals/b3/41/fa/b341faec320043cd756f48d784cb6864.jpg");
     background-size: cover;
@@ -204,7 +297,7 @@ canvas {
     padding: 0.5em 1em;
     border-radius: 4px;
     display: inline-block;
-    border: 1px solid #d2b48c;
+    border: 6px solid #d2b48c;
     font-family: 'New Rocker', cursive;
 }
 
@@ -212,6 +305,7 @@ canvas {
     font-weight: bold;
     color: #000;
 }
+
 
 /* New Game Button */
 #new-game-button {
