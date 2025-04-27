@@ -10,9 +10,11 @@ const wantedImage = document.getElementById("wanted-image");
 
 // Available Words
 let options = {
-    fruits: ["Apple", "Blueberry", "Mandarin", "Pineapple", "Pomegranate", "Watermelon"],
-    animals: ["Hedgehog", "Rhinoceros", "Squirrel", "Panther", "Walrus", "Zebra"],
-    countries: ["India", "Hungary", "Kyrgyzstan", "Switzerland", "Zimbabwe", "Dominica"],
+    fruits: ["Apple", "Blueberry", "Mandarin", "Pineapple", "Pomegranate", "Watermelon", "Cherry",],
+    animals: ["Hedgehog", "Rhinoceros", "Squirrel", "Panther", "Walrus", "Zebra","Elephant", "Dog","Lion","Bear","Alligator","Horse"],
+    countries: ["India", "Hungary", "Kyrgyzstan", "Switzerland", "Zimbabwe", "Dominica","Brazil", "Russia", "Africa","Canada"],
+    Restaurants: ["Mcdonalds","Starbucks","AppleBees","Wendys","BurgerKing", "Subway","Sonic","FiveGuys","Chipotle","Zaxbys","Dennys","WaffleHouse","Ihop"],
+
 };
 
 // Count variables
@@ -148,6 +150,7 @@ const canvasCreator = () => {
         drawLine(65, 10, 75, 10); // top
         drawLine(65, 10, 65, 20); // left
         drawLine(75, 10, 75, 20); // right
+        drawLine(10, 20, 80, 20);
     };
 
     const body = () => drawLine(70, 40, 70, 80);
