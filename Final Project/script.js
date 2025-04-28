@@ -200,12 +200,12 @@ const wantedImage = document.getElementById("wanted-image");
 const winImage = "TIpHat.png"; // Cowboy tipping his hat
 const loseImage = "wanted.png"; // Wanted poster for when they get away
 
-// Word categories to choose from
-let options = {
-    fruits: ["Apple", "Blueberry", "Mandarin", "Pineapple", "Pomegranate", "Watermelon", "Cherry", "Strawberry", "Grape"],
-    animals: ["Hedgehog", "Rhinoceros", "Squirrel", "Panther", "Walrus", "Zebra", "Elephant", "Dog", "Lion", "Bear", "Alligator", "Horse"],
-    countries: ["India", "Hungary", "Kyrgyzstan", "Switzerland", "Zimbabwe", "Dominica", "Brazil", "Russia", "Africa", "Canada"],
-    Restaurants: ["Mcdonalds", "Starbucks", "AppleBees", "Wendys", "BurgerKing", "Subway", "Sonic", "FiveGuys", "Chipotle", "Zaxbys", "Dennys", "WaffleHouse", "Ihop"]
+//Difficulty and Word Choices
+let options={
+    Easy:["Guns","Gold","Saddle","Horse","Saloon","Cowboy"],
+    Normal:["Pistol","Sheriff","Outlaw","Desert","Marshal","Wanted"],
+    Hard:["Revolver","Stagecoach","Prospector","Cowpoke","Winchester","TumbleWeed"],
+    WildWest:["Billy The Kid","Calamity Jane","Shoot Out","High Noon","Pat Garrett","Buffalo Bill"]
 };
 
 // Game state tracking
@@ -368,15 +368,22 @@ const generateWord = (optionValue) => {
     wordContainer.style.gap = "10px"; // Spacing between letters
     wordContainer.style.marginTop = "20px";
     
-    // Add underscores for each letter
-    for (let i = 0; i < chosenWord.length; i++) {
-        let dashSpan = document.createElement("span");
-        dashSpan.className = "dashes";
-        dashSpan.innerText = "_";
-        dashSpan.style.fontSize = "2rem";
-        dashSpan.style.fontWeight = "bold";
-        dashSpan.style.width = "30px"; // Fixed width dash
-        dashSpan.style.textAlign = "center";
+    //Adds an Underscore for Each Letter
+    for(let i=0;i<chosenWord.length;i++) {
+        let dashSpan=document.createElement("span");
+        dashSpan.className="dashes";
+
+        //This if Statement Handles "spaces" in the Word
+        if(chosenWord[i]===" "){
+            dashSpan.innerText=" ";
+            winCount++;
+        }else{
+            dashSpan.innerText="_";
+        }
+        dashSpan.style.fontSize="2rem";
+        dashSpan.style.fontWeight="bold";
+        dashSpan.style.width="30px";
+        dashSpan.style.textAlign="center";
         wordContainer.appendChild(dashSpan);
     }
     
@@ -523,6 +530,21 @@ const drawMan = (count) => {
         default: break;
     }
 };
+
+//This Allows the Player to Choose a Letter with the Keyboard
+document.addEventListener("keydown",(event)=>{
+    const key=event.key.toUpperCase();
+    //Checks if Keystroke is a Letter
+    if(key>="A"&&key<="Z"){
+        const button=Array.from(document.querySelectorAll(".letters"))
+            .find(btn=>btn.innerText===key&&!btn.disabled);
+        //Makes it so that the Correct Letter is "Clicked"
+        if(button){
+            button.click();
+        }
+    }
+});
+//Reference:https://developer.mozilla.org/en-US/docs/Web/API/Element/keydown_event
 
 // Start a new game when button clicked
 newGameButton.addEventListener("click", () => {
