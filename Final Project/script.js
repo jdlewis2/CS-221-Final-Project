@@ -1,4 +1,119 @@
-// Intro screen references
+// Audio setup - playing cowboy background tunes and sound effects
+let backgroundMusic = null;
+let winMusic = null;
+let loseMusic = null;
+let audioInitialized = false;
+
+// Starts the audio only when needed - fixes those annoying browser blocks
+function initializeAudio() {
+    if (audioInitialized) return; // Don't set up twice
+    
+    // Load our cowboy sounds
+    backgroundMusic = new Audio('WildWestBackground.mp3');
+    backgroundMusic.loop = true;
+    backgroundMusic.volume = 0.5;
+    
+    // Yeehaw for winners!
+    winMusic = new Audio('Yeehaw.mp3');
+    winMusic.volume = 0.7;
+    
+    // Sad trombone for losers
+    loseMusic = new Audio('Lose.mp3');
+    loseMusic.volume = 0.7;
+    
+    // Add sound toggle button in the corner
+    const soundButton = document.createElement('button');
+    soundButton.id = 'sound-toggle';
+    soundButton.innerHTML = '🔊';
+    soundButton.style.position = 'fixed';
+    soundButton.style.top = '10px';
+    soundButton.style.right = '10px';
+    soundButton.style.zIndex = '1000';
+    soundButton.style.padding = '5px 10px';
+    soundButton.style.background = '#8B4513';
+    soundButton.style.border = '2px solid #FFD700';
+    soundButton.style.borderRadius = '5px';
+    soundButton.style.cursor = 'pointer';
+    document.body.appendChild(soundButton);
+    
+    // Toggle mute/unmute when clicked
+    soundButton.addEventListener('click', function() {
+        if (backgroundMusic.paused) {
+            backgroundMusic.play()
+                .then(() => {
+                    soundButton.innerHTML = '🔊';
+                })
+                .catch(error => {
+                    console.error("Audio play failed:", error);
+                    alert("Please try clicking again to enable sound");
+                });
+        } else {
+            backgroundMusic.pause();
+            soundButton.innerHTML = '🔇';
+        }
+    });
+    
+    audioInitialized = true;
+}
+
+// Play the victory music when player wins
+function onPlayerWin() {
+    if (!audioInitialized) return;
+    
+    backgroundMusic.pause();
+    backgroundMusic.currentTime = 0;
+    winMusic.play().catch(error => {
+        console.error("Win music play failed:", error);
+    });
+}
+
+// Play the sad tunes when player loses
+function onPlayerLose() {
+    if (!audioInitialized) return;
+    
+    backgroundMusic.pause();
+    backgroundMusic.currentTime = 0;
+    loseMusic.play().catch(error => {
+        console.error("Lose music play failed:", error);
+    });
+}
+
+// Gets background music going again after win/loss
+function restartBackgroundMusic() {
+    if (!audioInitialized) return;
+    
+    // Stop any victory/defeat music
+    if (winMusic && !winMusic.paused) {
+        winMusic.pause();
+        winMusic.currentTime = 0;
+    }
+    
+    if (loseMusic && !loseMusic.paused) {
+        loseMusic.pause();
+        loseMusic.currentTime = 0;
+    }
+    
+    // Fire up the background music
+    backgroundMusic.currentTime = 0;
+    backgroundMusic.play().catch(error => {
+        console.error("Failed to restart background music:", error);
+    });
+    
+    // Update the button icon
+    const soundButton = document.getElementById('sound-toggle');
+    if (soundButton) {
+        soundButton.innerHTML = '🔊';
+    }
+}
+
+// Initialize audio on first click - browsers need user interaction
+document.addEventListener('click', function initAudioOnFirstClick() {
+    initializeAudio();
+    // Only need this once
+    document.removeEventListener('click', initAudioOnFirstClick);
+});
+
+// Grab all our screens and buttons for navigation
 const introScreen = document.getElementById("intro-screen");
 const howToPlayScreen = document.getElementById("how-to-play-screen");
 const gameContent = document.getElementById("game-content");
@@ -7,37 +122,71 @@ const howToPlayButton = document.getElementById("how-to-play-button");
 const closeInstructionsButton = document.getElementById("close-instructions");
 const returnToMenuButton = document.getElementById("return-to-menu-button");
 
-// Add event listeners for intro buttons
+// Start game and kick off the music
 startGameButton.addEventListener("click", () => {
+    // Get audio ready
+    initializeAudio();
+    
+    // Try playing the theme music
+    if (backgroundMusic) {
+        backgroundMusic.play()
+            .catch(error => {
+                console.error("Audio play failed on game start:", error);
+                // Show a little hint about the sound button
+                const soundPrompt = document.createElement('div');
+                soundPrompt.innerHTML = 'Click the 🔊 button in the corner to enable music!';
+                soundPrompt.style.color = '#FFD700';
+                soundPrompt.style.padding = '10px';
+                soundPrompt.style.background = 'rgba(0,0,0,0.7)';
+                soundPrompt.style.borderRadius = '5px';
+                soundPrompt.style.position = 'fixed';
+                soundPrompt.style.top = '50px';
+                soundPrompt.style.right = '10px';
+                soundPrompt.style.zIndex = '1001';
+                document.body.appendChild(soundPrompt);
+                
+                // Clean up after a few seconds
+                setTimeout(() => {
+                    soundPrompt.remove();
+                }, 5000);
+            });
+    }
+    
+    // Show the game, hide the intro
     introScreen.classList.add("hide");
     gameContent.classList.remove("hide");
     initializer();
 });
 
+// Show how to play instructions
 howToPlayButton.addEventListener("click", () => {
     introScreen.classList.add("hide");
     howToPlayScreen.classList.remove("hide");
 });
 
+// Return from instructions to menu
 closeInstructionsButton.addEventListener("click", () => {
     howToPlayScreen.classList.add("hide");
     introScreen.classList.remove("hide");
 });
 
+// Return to main menu from the game
 returnToMenuButton.addEventListener("click", () => {
     newGameContainer.classList.add("hide");
     gameContent.classList.add("hide");
     introScreen.classList.remove("hide");
+    
+    // Reset music when going back to menu
+    restartBackgroundMusic();
 });
 
+// Start with the intro screen on page load
 window.onload = () => {
-    // Show intro screen by default
     introScreen.classList.remove("hide");
     gameContent.classList.add("hide");
-    
 };
 
-// Initial References
+// Grab all the game elements we'll need
 const letterContainer = document.getElementById("letter-container");
 const optionsContainer = document.getElementById("options-container");
 const userInputSection = document.getElementById("user-input-section");
@@ -47,25 +196,24 @@ const canvas = document.getElementById("canvas");
 const resultText = document.getElementById("result-text");
 const wantedImage = document.getElementById("wanted-image");
 
+// Our victory and defeat images
+const winImage = "TIpHat.png"; // Cowboy tipping his hat
+const loseImage = "wanted.png"; // Wanted poster for when they get away
 
-// Image paths
-const winImage = "TIpHat.png"; // Path to win image
-const loseImage = "wanted.png"; // Path to lose image
-
-// Available Words
+// Word categories to choose from
 let options = {
-    fruits: ["Apple", "Blueberry", "Mandarin", "Pineapple", "Pomegranate", "Watermelon", "Cherry","Strawberry","Grape"],
-    animals: ["Hedgehog", "Rhinoceros", "Squirrel", "Panther", "Walrus", "Zebra","Elephant", "Dog","Lion","Bear","Alligator","Horse"],
-    countries: ["India", "Hungary", "Kyrgyzstan", "Switzerland", "Zimbabwe", "Dominica","Brazil", "Russia", "Africa","Canada"],
-    Restaurants: ["Mcdonalds","Starbucks","AppleBees","Wendys","BurgerKing", "Subway","Sonic","FiveGuys","Chipotle","Zaxbys","Dennys","WaffleHouse","Ihop"]
+    fruits: ["Apple", "Blueberry", "Mandarin", "Pineapple", "Pomegranate", "Watermelon", "Cherry", "Strawberry", "Grape"],
+    animals: ["Hedgehog", "Rhinoceros", "Squirrel", "Panther", "Walrus", "Zebra", "Elephant", "Dog", "Lion", "Bear", "Alligator", "Horse"],
+    countries: ["India", "Hungary", "Kyrgyzstan", "Switzerland", "Zimbabwe", "Dominica", "Brazil", "Russia", "Africa", "Canada"],
+    Restaurants: ["Mcdonalds", "Starbucks", "AppleBees", "Wendys", "BurgerKing", "Subway", "Sonic", "FiveGuys", "Chipotle", "Zaxbys", "Dennys", "WaffleHouse", "Ihop"]
 };
 
-// Count variables
+// Game state tracking
 let winCount = 0;
 let count = 0;
 let chosenWord = "";
 
-// Initializer
+// Set up the game
 const initializer = () => {
     winCount = 0;
     count = 0;
@@ -76,12 +224,12 @@ const initializer = () => {
     letterContainer.innerHTML = "";
     wantedImage.classList.add("hide");
     canvas.classList.remove("hide");
-    
-    // Reset result text content
-    resultText.innerHTML = "";
-    resultText.appendChild(wantedImage);  // Re-append the image to result text
 
-    // Create alphabet buttons
+    // Clear previous results
+    resultText.innerHTML = "";
+    resultText.appendChild(wantedImage);
+
+    // Create A-Z letter buttons
     for (let i = 65; i < 91; i++) {
         let button = document.createElement("button");
         button.classList.add("letters");
@@ -90,65 +238,72 @@ const initializer = () => {
             let charArray = chosenWord.split("");
             let dashes = document.getElementsByClassName("dashes");
 
+            // Check if letter is in the word
             if (charArray.includes(button.innerText)) {
                 charArray.forEach((char, index) => {
                     if (char === button.innerText) {
                         dashes[index].innerText = char;
                         winCount += 1;
 
+                        // Check if player won
                         if (winCount == charArray.length) {
                             canvas.classList.add("hide");
-                            
-                            // Set win image
-                            wantedImage.src = winImage; 
+
+                            // Show victory image
+                            wantedImage.src = winImage;
                             wantedImage.style.display = "block";
                             wantedImage.classList.remove("hide");
-                            
-                            // Create result message elements
+
+                            // Play yeehaw sound
+                            onPlayerWin();
+
+                            // Show victory message
                             const winMsg = document.createElement("h2");
                             winMsg.className = "win-msg";
                             winMsg.innerText = "YEEHAW! You caught the outlaw!";
-                            
+
                             const wordMsg = document.createElement("p");
                             wordMsg.innerHTML = `The word was <span>${chosenWord}</span>`;
-                            
-                            // Clear result text (except the image) and add new elements
+
                             while (resultText.childNodes.length > 1) {
                                 resultText.removeChild(resultText.lastChild);
                             }
                             resultText.appendChild(winMsg);
                             resultText.appendChild(wordMsg);
-                            
+
                             blocker();
                         }
                     }
                 });
             } else {
+                // Wrong guess - draw next part of hangman
                 count += 1;
                 drawMan(count);
                 if (count === 6) {
                     canvas.classList.add("hide");
-                    
-                    // Set lose image
+
+                    // Show the wanted poster
                     wantedImage.src = loseImage;
                     wantedImage.style.display = "block";
                     wantedImage.classList.remove("hide");
-                    
-                    // Create result message elements
+
+                    // Play defeat sound
+                    onPlayerLose();
+
+                    // Show defeat message
                     const loseMsg = document.createElement("h2");
                     loseMsg.className = "lose-msg";
-                    loseMsg.innerText = "Aw Man! You let em get away! ";
-                    
+                    loseMsg.innerText = "Aw Man! You let em get away!";
+
                     const wordMsg = document.createElement("p");
                     wordMsg.innerHTML = `The word was <span>${chosenWord}</span>`;
-                    
-                    // Clear result text (except the image) and add new elements
+
                     while (resultText.childNodes.length > 1) {
                         resultText.removeChild(resultText.lastChild);
                     }
                     resultText.appendChild(loseMsg);
                     resultText.appendChild(wordMsg);
-                    
+
                     blocker();
                 }
             }
@@ -161,7 +316,7 @@ const initializer = () => {
     canvasCreator().initialDrawing();
 };
 
-// Display option buttons
+// Show the category selection
 const displayOptions = () => {
     optionsContainer.innerHTML += `<h3>Choose Your Posse:</h3>`;
     let buttonCon = document.createElement("div");
@@ -174,7 +329,7 @@ const displayOptions = () => {
     optionsContainer.appendChild(buttonCon);
 };
 
-// Disable all buttons
+// Disable buttons after game ends
 const blocker = () => {
     let optionsButtons = document.querySelectorAll(".options");
     let letterButtons = document.querySelectorAll(".letters");
@@ -190,7 +345,7 @@ const blocker = () => {
     newGameContainer.classList.remove("hide");
 };
 
-// Generate random word from selected option
+// Pick a random word from selected category
 const generateWord = (optionValue) => {
     let optionsButtons = document.querySelectorAll(".options");
     optionsButtons.forEach((button) => {
@@ -206,16 +361,35 @@ const generateWord = (optionValue) => {
     let optionArray = options[optionValue];
     chosenWord = optionArray[Math.floor(Math.random() * optionArray.length)].toUpperCase();
 
-    let displayItem = chosenWord.replace(/./g, `<span class="dashes">_</span>`);
-    userInputSection.innerHTML = displayItem;
+    // Make a nice container for the word dashes
+    let wordContainer = document.createElement("div");
+    wordContainer.style.display = "flex";
+    wordContainer.style.justifyContent = "center";
+    wordContainer.style.gap = "10px"; // Spacing between letters
+    wordContainer.style.marginTop = "20px";
+    
+    // Add underscores for each letter
+    for (let i = 0; i < chosenWord.length; i++) {
+        let dashSpan = document.createElement("span");
+        dashSpan.className = "dashes";
+        dashSpan.innerText = "_";
+        dashSpan.style.fontSize = "2rem";
+        dashSpan.style.fontWeight = "bold";
+        dashSpan.style.width = "30px"; // Fixed width dash
+        dashSpan.style.textAlign = "center";
+        wordContainer.appendChild(dashSpan);
+    }
+    
+    userInputSection.appendChild(wordContainer);
 };
 
-// Canvas drawing logic
+// Canvas drawing functions for our cowboy
 const canvasCreator = () => {
     let context = canvas.getContext("2d");
     context.beginPath();
     context.lineWidth = 2;
 
+    // Helper for drawing lines
     const drawLine = (fromX, fromY, toX, toY, color = "#000") => {
         context.beginPath();
         context.strokeStyle = color;
@@ -224,7 +398,7 @@ const canvasCreator = () => {
         context.stroke();
     };
 
-    // Draw filled circle
+    // Helper for drawing circles
     const drawCircle = (x, y, radius, stroke = "#000", fill = null) => {
         context.beginPath();
         context.strokeStyle = stroke;
@@ -236,7 +410,7 @@ const canvasCreator = () => {
         }
     };
 
-    // Draw filled shape
+    // Helper for drawing shapes
     const drawShape = (points, stroke = "#000", fill = null) => {
         context.beginPath();
         context.strokeStyle = stroke;
@@ -252,169 +426,109 @@ const canvasCreator = () => {
         context.stroke();
     };
 
+    // Draw the cowboy head with hat
     const head = () => {
-        // Head
-        drawCircle(70, 30, 10, "#000", "#F5D0A9"); // Flesh tone
-        
-        // Cowboy hat
+        drawCircle(70, 30, 10, "#000", "#F5D0A9"); // Face
+
+        // Cowboy hat brim
         context.beginPath();
-        // Hat brim
         context.strokeStyle = "#000";
-        context.fillStyle = "#8B4513"; // Brown hat
+        context.fillStyle = "#8B4513";
         context.ellipse(70, 20, 18, 5, 0, 0, Math.PI * 2);
         context.fill();
         context.stroke();
-        
+
         // Hat top
         context.beginPath();
         context.strokeStyle = "#000";
-        context.fillStyle = "#8B4513"; // Brown hat
+        context.fillStyle = "#8B4513";
         context.ellipse(70, 15, 10, 5, 0, 0, Math.PI * 2);
         context.fill();
         context.stroke();
-        
-        // Face features
-        drawCircle(66, 28, 1, "#000", "#000"); // Left eye
-        drawCircle(74, 28, 1, "#000", "#000"); // Right eye
-        
-        // Straight mouth (neutral expression)
+
+        // Eyes and mouth
+        drawCircle(66, 28, 1, "#000", "#000");
+        drawCircle(74, 28, 1, "#000", "#000");
         drawLine(67, 34, 73, 34);
     };
 
+    // Draw the cowboy body with vest
     const body = () => {
-        drawLine(70, 40, 70, 80); // Body
-        
-        // Bandana
-        drawShape([
-            [60, 42],
-            [80, 42],
-            [82, 46],
-            [58, 46]
-        ], "#000", "#FF0000"); // Red bandana
+        drawLine(70, 40, 70, 80);
+        drawShape([[60, 42], [80, 42], [82, 46], [58, 46]], "#000", "#FF0000"); // Red vest
     };
 
+    // Left arm with gun
     const leftArm = () => {
-        drawLine(70, 55, 50, 70); // Left arm
-        
-        // Hand
-        drawCircle(50, 70, 3, "#000", "#F5D0A9"); // Flesh tone
-        
-        // Gun (when the left arm is drawn)
-        drawShape([
-            [50, 65],
-            [40, 65],
-            [40, 69],
-            [50, 69]
-        ], "#000", "#333333"); // Dark gray gun
+        drawLine(70, 55, 50, 70);
+        drawCircle(50, 70, 3, "#000", "#F5D0A9"); // Hand
+        drawShape([[50, 65], [40, 65], [40, 69], [50, 69]], "#000", "#333333"); // Gun
     };
 
+    // Right arm
     const rightArm = () => {
-        drawLine(70, 55, 90, 70); // Right arm
-        // Hand
-        drawCircle(90, 70, 3, "#000", "#F5D0A9"); // Flesh tone
+        drawLine(70, 55, 90, 70);
+        drawCircle(90, 70, 3, "#000", "#F5D0A9"); // Hand
     };
 
+    // Left leg with boot
     const leftLeg = () => {
-        drawLine(70, 80, 50, 110); // Left leg
-        
-        // Boot
-        drawShape([
-            [50, 110],
-            [45, 110],
-            [45, 115],
-            [55, 115],
-            [55, 110]
-        ], "#000", "#8B4513"); // Brown boot
-        
-        // Spur
-        drawLine(45, 113, 42, 113, "#FFD700"); // Gold spur
+        drawLine(70, 80, 50, 110);
+        drawShape([[50, 110], [45, 110], [45, 115], [55, 115], [55, 110]], "#000", "#8B4513"); // Boot
+        drawLine(45, 113, 42, 113, "#FFD700"); // Spur
     };
 
+    // Right leg with boot and belt
     const rightLeg = () => {
-        drawLine(70, 80, 90, 110); // Right leg
-        
-        // Boot
-        drawShape([
-            [90, 110],
-            [85, 110],
-            [85, 115],
-            [95, 115],
-            [95, 110]
-        ], "#000", "#8B4513"); // Brown boot
-        
-        // Spur
-        drawLine(95, 113, 98, 113, "#FFD700"); // Gold spur
-        
-        // Belt (final detail)
-        drawShape([
-            [65, 80],
-            [75, 80],
-            [75, 83],
-            [65, 83]
-        ], "#000", "#8B4513"); // Brown belt
-        
-        // Belt buckle
-        drawShape([
-            [68, 80],
-            [72, 80],
-            [72, 83],
-            [68, 83]
-        ], "#000", "#FFD700"); // Gold buckle
+        drawLine(70, 80, 90, 110);
+        drawShape([[90, 110], [85, 110], [85, 115], [95, 115], [95, 110]], "#000", "#8B4513"); // Boot
+        drawLine(95, 113, 98, 113, "#FFD700"); // Spur
+        drawShape([[65, 80], [75, 80], [75, 83], [65, 83]], "#000", "#8B4513"); // Belt
+        drawShape([[68, 80], [72, 80], [72, 83], [68, 83]], "#000", "#FFD700"); // Belt buckle
     };
 
+    // Set up the Wild West scene
     const initialDrawing = () => {
         context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-        
-        // Sky background
-        context.fillStyle = "#87CEEB";
+        context.fillStyle = "#87CEEB"; // Sky
         context.fillRect(0, 0, canvas.width, 130);
-        
-        // Draw desert ground
-        context.fillStyle = "#D2B48C"; // Sandy color
+        context.fillStyle = "#D2B48C"; // Desert ground
         context.fillRect(0, 130, canvas.width, canvas.height - 130);
-        context.strokeStyle = "#A0522D"; // Darker sand edge
+        context.strokeStyle = "#A0522D"; // Ground line
         context.beginPath();
         context.moveTo(0, 130);
         context.lineTo(canvas.width, 130);
         context.stroke();
-        
-        // Draw cactus
-        drawShape([
-            [120, 130],
-            [120, 100],
-            [115, 100],
-            [115, 115],
-            [110, 115],
-            [110, 130]
-        ], "#000", "#2E8B57"); // Green cactus
-        
-        // Gallows - wooden look
-        drawLine(10, 130, 40, 130, "#8B4513"); // base
-        drawLine(10, 10, 10, 130, "#8B4513");  // pole
-        drawLine(10, 10, 70, 10, "#8B4513");   // top beam
-        drawLine(70, 10, 70, 20, "#A52A2A");   // rope
+        drawShape([[120, 130], [120, 100], [115, 100], [115, 115], [110, 115], [110, 130]], "#000", "#2E8B57"); // Cactus
+        drawLine(10, 130, 40, 130, "#8B4513"); // Gallows base
+        drawLine(10, 10, 10, 130, "#8B4513"); // Gallows post
+        drawLine(10, 10, 70, 10, "#8B4513"); // Gallows top
+        drawLine(70, 10, 70, 20, "#A52A2A"); // Noose rope
     };
 
     return { initialDrawing, head, body, leftArm, rightArm, leftLeg, rightLeg };
 };
 
-// Draw stickman step-by-step
+// Draw our cowboy piece by piece as wrong guesses happen
 const drawMan = (count) => {
     let { head, body, leftArm, rightArm, leftLeg, rightLeg } = canvasCreator();
 
     switch (count) {
-        case 1: head(); break;
-        case 2: body(); break;
-        case 3: leftArm(); break;
-        case 4: rightArm(); break;
-        case 5: leftLeg(); break;
-        case 6: rightLeg(); break;
+        case 1: head(); break; // First wrong guess gets the head
+        case 2: body(); break; // Second shows the body
+        case 3: leftArm(); break; // Third shows left arm
+        case 4: rightArm(); break; // Fourth shows right arm
+        case 5: leftLeg(); break; // Fifth shows left leg
+        case 6: rightLeg(); break; // Last wrong guess completes the cowboy
         default: break;
     }
 };
 
-// New Game Button
-newGameButton.addEventListener("click", initializer);
-
-// Start game on load
-window.onload = initializer;
+// Start a new game when button clicked
+newGameButton.addEventListener("click", () => {
+    // Get the music going again
+    restartBackgroundMusic();
+    
+    // Reset everything for a fresh game
+    initializer();
+});
