@@ -4,7 +4,7 @@ let winMusic = null;
 let loseMusic = null;
 let audioInitialized = false;
 
-// Starts the audio only when needed - fixes those annoying browser blocks
+// Starts the audio only when the start game button is clicked
 function initializeAudio() {
     if (audioInitialized) return; // Don't set up twice
     
