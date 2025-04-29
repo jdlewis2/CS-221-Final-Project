@@ -201,11 +201,11 @@ const winImage = "TIpHat.png"; // Cowboy tipping his hat
 const loseImage = "wanted.png"; // Wanted poster for when they get away
 
 //Difficulty and Word Choices
-let options={
-    Easy:["Guns","Gold","Saddle","Horse","Saloon","Cowboy"],
-    Normal:["Pistol","Sheriff","Outlaw","Desert","Marshal","Wanted"],
-    Hard:["Revolver","Stagecoach","Prospector","Cowpoke","Winchester","TumbleWeed"],
-    WildWest:["Billy The Kid","Calamity Jane","Shoot Out","High Noon","Pat Garrett","Buffalo Bill"]
+let options = {
+    Easy: ["Guns", "Gold", "Saddle", "Horse", "Saloon", "Cowboy"],
+    Normal: ["Pistol", "Sheriff", "Outlaw", "Desert", "Marshal", "Wanted"],
+    Hard: ["Revolver", "Stagecoach", "Prospector", "Cowpoke", "Winchester", "TumbleWeed"],
+    WildWest: ["Homesteader", "Rattlesnake", "Frontier Justice", "Cattle Rustling", "Peacemaker", "Sharpshooting"]
 };
 
 // Game state tracking
