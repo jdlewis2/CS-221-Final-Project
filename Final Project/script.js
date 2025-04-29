@@ -205,7 +205,7 @@ let options = {
     Easy: ["Guns", "Gold", "Saddle", "Horse", "Saloon", "Cowboy"],
     Normal: ["Pistol", "Sheriff", "Outlaw", "Desert", "Marshal", "Wanted"],
     Hard: ["Revolver", "Stagecoach", "Prospector", "Cowpoke", "Winchester", "TumbleWeed"],
-    WildWest: ["Homesteader", "Rattlesnake", "Frontier Justice", "Cattle Rustling", "Peacemaker", "Sharpshooting"]
+    WildWest: ["Vigilante", "Bandolier", "Maverick", "Desperado", "Bounty", "Gunsmoke"]
 };
 
 // Game state tracking
