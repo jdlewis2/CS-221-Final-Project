@@ -8,7 +8,7 @@ let audioInitialized = false;
 function initializeAudio() {
     if (audioInitialized) return; // Don't set up twice
     
-    // Load our cowboy sounds
+    // Load our wildwest music
     backgroundMusic = new Audio('WildWest.mp3');
     backgroundMusic.loop = true;
     backgroundMusic.volume = 0.5;
