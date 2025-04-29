@@ -459,10 +459,10 @@ const canvasCreator = () => {
         drawLine(67, 34, 73, 34);
     };
 
-    // Draw the cowboy body with vest
+    // Draw the cowboy body with bandana
     const body = () => {
         drawLine(70, 40, 70, 80);
-        drawShape([[60, 42], [80, 42], [82, 46], [58, 46]], "#000", "#FF0000"); // Red vest
+        drawShape([[60, 42], [80, 42], [82, 46], [58, 46]], "#000", "#FF0000"); // Red bandana
     };
 
     // Left arm with gun
